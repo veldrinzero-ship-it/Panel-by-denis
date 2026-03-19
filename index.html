@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Denis VIP Menu</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: sans-serif;
+            background: transparent;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        /* Ikon Floating yang Bisa Digeser */
+        #floating-icon {
+            position: fixed;
+            top: 100px;
+            left: 10px;
+            width: 65px;
+            height: 65px;
+            background: rgba(15, 15, 15, 0.9);
+            border: 2px solid #a020f0;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 15px #a020f0;
+            z-index: 9999;
+            touch-action: none; /* Penting untuk drag */
+        }
+
+        #floating-icon span {
+            color: #fff;
+            font-weight: bold;
+            font-size: 10px;
+            text-shadow: 0 0 5px #a020f0;
+            text-align: center;
+        }
+
+        /* Panel Menu Utama */
+        #menu-container {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 260px;
+            background: rgba(5, 5, 5, 0.98);
+            border: 2px solid #a020f0;
+            border-radius: 12px;
+            color: white;
+            padding: 15px;
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.8), inset 0 0 10px #a020f0;
+            z-index: 10000;
+        }
+
+        .header {
+            text-align: center;
+            border-bottom: 1px solid #333;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+        }
+
+        .header h2 {
+            margin: 0;
+            font-size: 20px;
+            color: #a020f0;
+            letter-spacing: 1px;
+        }
+
+        .status {
+            font-size: 10px;
+            color: #888;
+            margin-top: 5px;
+        }
+
+        .section-title {
+            font-size: 11px;
+            color: #a020f0;
+            background: rgba(160, 32, 240, 0.1);
+            padding: 3px 8px;
+            margin: 10px 0;
+            font-weight: bold;
+            border-left: 3px solid #a020f0;
+        }
+
+        /* Toggle Switch */
+        .item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 40px;
+            height: 20px;
+        }
+
+        .switch input { opacity: 0; width: 0; height: 0; }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #222;
+            transition: .3s;
+            border-radius: 20px;
+            border: 1px solid #444;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 14px; width: 14px;
+            left: 3px; bottom: 2px;
+            background-color: #fff;
+            transition: .3s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider { background-color: #a020f0; }
+        input:checked + .slider:before { transform: translateX(20px); }
+
+        .btn-close {
+            width: 100%;
+            padding: 10px;
+            background: linear-gradient(to right, #7b18ba, #a020f0);
+            border: none;
+            color: white;
+            font-weight: bold;
+            border-radius: 6px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="floating-icon">
+        <span>DENIS<br>CHEAT</span>
+    </div>
+
+    <div id="menu-container">
+        <div class="header">
+            <h2>DENIS MOD MENU</h2>
+            <div class="status">
+                DEVICE: OPPO F7 | STATUS: <span style="color:#0f0">ACTIVE</span><br>
+                <span style="color:#ffcc00">VIP LEVEL 8 ACCESS [V]</span>
+            </div>
+        </div>
+
+        <div class="section-title">COMBAT FEATURES</div>
+        
+        <div class="item">
+            <span>HEAD EASY (AUTO)</span>
+            <label class="switch">
+                <input type="checkbox" id="headshot">
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <div class="item">
+            <span>AIMLOCK NECK</span>
+            <label class="switch">
+                <input type="checkbox">
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <div class="section-title">BYPASS SYSTEM</div>
+
+        <div class="item">
+            <span>ANTI-BAN 100%</span>
+            <label class="switch">
+                <input type="checkbox" checked>
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <button class="btn-close" onclick="closeMenu()">CLOSE MENU</button>
+    </div>
+
+    <script>
+        const icon = document.getElementById('floating-icon');
+        const menu = document.getElementById('menu-container');
+        let isDragging = false;
+        let startX, startY, initialX, initialY;
+
+        // Logika Drag/Geser Ikon
+        icon.addEventListener('touchstart', (e) => {
+            isDragging = false; 
+            startX = e.touches[0].clientX - icon.offsetLeft;
+            startY = e.touches[0].clientY - icon.offsetTop;
+            initialX = icon.offsetLeft;
+            initialY = icon.offsetTop;
+        });
+
+        icon.addEventListener('touchmove', (e) => {
+            isDragging = true;
+            let currentX = e.touches[0].clientX - startX;
+            let currentY = e.touches[0].clientY - startY;
+            
+            // Batasan agar tidak keluar layar
+            const maxX = window.innerWidth - icon.offsetWidth;
+            const maxY = window.innerHeight - icon.offsetHeight;
+            
+            icon.style.left = Math.min(Math.max(0, currentX), maxX) + 'px';
+            icon.style.top = Math.min(Math.max(0, currentY), maxY) + 'px';
+        });
+
+        icon.addEventListener('touchend', (e) => {
+            // Jika hanya diklik (bukan digeser), buka menu
+            if (!isDragging) {
+                openMenu();
+            }
+        });
+
+        function openMenu() {
+            menu.style.display = 'block';
+            icon.style.display = 'none';
+        }
+
+        function closeMenu() {
+            menu.style.display = 'none';
+            icon.style.display = 'flex';
+        }
+    </script>
+</body>
+</html>
